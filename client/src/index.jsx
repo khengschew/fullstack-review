@@ -22,10 +22,13 @@ class App extends React.Component {
       },
       body:JSON.stringify({'term':term})
     })
-      .then((response) => response.json())
+      .then(res => res.json())
       .then((data) => {
         console.log(data);
-      });
+      })
+      .catch((err) => {
+        console.error(err);
+      })
   }
 
   render () {

@@ -8,11 +8,13 @@ let repoSchema = new mongoose.Schema({
   owner: {
     login: String,
     id: Number,
+    url: String,
     type: String
   },
   private: Boolean,
   description: String,
   fork: Boolean,
+  url: String,
   created_at: String,
   updated_at: String,
   pushed_at: String,
@@ -36,10 +38,37 @@ let repoSchema = new mongoose.Schema({
 let Repo = mongoose.model('Repo', repoSchema);
 
 let save = (repoArr, cb) => {
+  var results = [];
   repoArr.forEach((repo) => {
-    // console.log(repo);
-    repo.save(cb);
+    console.log(repo.id);
+    var repoDb = new Repo({
+      id: repo.id,
+      name: repo.name,
+      full_name: repo.full_name,
+      ownerLogin: repo.owner.login,
+      ownerId: repo.owner.id,
+      ownerUrl: repo.owner.url,
+      ownerType: repo.owner.type,
+      private: repo.private,
+      description: repo.description,
+      fork: repo.fork,
+      url: repo.url,
+      created_at: repo.created_at,
+      updated_at: repo.updated_at,
+      pushed_at: repo.pushed_at,
+      size: repo.size,
+      stargazers_count: repo.stargazers_count,
+      watchers_count: repo.watchers_count,
+      forks_count: repo.forks_count,
+      forks: repo.forks,
+      open_issues_count: repo.open_issues_count,
+      open_issues: repo.open_issues
+    });
+    results.push(repoDb.save());
   });
+
+  Promise.all(results)
+    .then((results) => cb(results));
 }
 
 var db = mongoose.connection;
