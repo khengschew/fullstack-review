@@ -1,3 +1,8 @@
 node_modules
 client/dist/bundle.js
 config.js
+
+# Local development
+*.env
+*.dev
+.DS_Store
