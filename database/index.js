@@ -73,6 +73,18 @@ let save = (repoArr, cb) => {
     .catch((err) => cb(err));
 }
 
+var top25 = (cb) => {
+  Repo.find({}, null, {
+    limit: 25,
+    sort: {
+      watchers_count: -1
+    }
+  }, (err, data) => {
+    cb(err, data);
+  });
+
+}
+
 var db = mongoose.connection;
 db.on('error', console.error.bind(console, 'connection error:'));
 db.once('open', function() {
@@ -80,3 +92,4 @@ db.once('open', function() {
 });
 
 module.exports.save = save;
+module.exports.top25 = top25;

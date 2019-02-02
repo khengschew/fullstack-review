@@ -11,6 +11,7 @@ class App extends React.Component {
       repos: []
     }
 
+    this.refresh();
   }
 
   search (term) {
@@ -25,6 +26,21 @@ class App extends React.Component {
       .then(res => res.json())
       .then((data) => {
         console.log(data);
+        this.refresh();
+      })
+      .catch((err) => {
+        console.error(err);
+      })
+  }
+
+  refresh () {
+    fetch('http://localhost:1128/repos')
+      .then(res => res.json())
+      .then((data) => {
+        // Set state to data
+        this.setState({
+          repos: data
+        });
       })
       .catch((err) => {
         console.error(err);
@@ -34,8 +50,8 @@ class App extends React.Component {
   render () {
     return (<div>
       <h1>Github Fetcher</h1>
-      <RepoList repos={this.state.repos}/>
       <Search onSearch={this.search.bind(this)}/>
+      <RepoList repos={this.state.repos}/>
     </div>)
   }
 }
