@@ -2,7 +2,6 @@ const express = require('express');
 const morgan = require('morgan');
 const db = require('../database/index.js');
 const github = require('../helpers/github.js');
-require('dotenv').config();
 let app = express();
 
 app.use(express.json());
