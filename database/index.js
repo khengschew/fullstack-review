@@ -2,15 +2,13 @@ const mongoose = require('mongoose');
 mongoose.connect('mongodb://localhost/fetcher');
 
 let repoSchema = new mongoose.Schema({
-  id: Number,
+  githubId: Number,
   name: String,
   full_name: String,
-  owner: {
-    login: String,
-    id: Number,
-    url: String,
-    type: String
-  },
+  owner_login: String,
+  owner_id: Number,
+  owner_url: String,
+  owner_type: String,
   private: Boolean,
   description: String,
   fork: Boolean,
@@ -40,15 +38,14 @@ let Repo = mongoose.model('Repo', repoSchema);
 let save = (repoArr, cb) => {
   var results = [];
   repoArr.forEach((repo) => {
-    console.log(repo.id);
-    var repoDb = new Repo({
-      id: repo.id,
+    var repoDb = {
+      githubId: repo.id,
       name: repo.name,
       full_name: repo.full_name,
-      ownerLogin: repo.owner.login,
-      ownerId: repo.owner.id,
-      ownerUrl: repo.owner.url,
-      ownerType: repo.owner.type,
+      owner_login: repo.owner.login,
+      owner_id: repo.owner.id,
+      owner_url: repo.owner.url,
+      owner_type: repo.owner.type,
       private: repo.private,
       description: repo.description,
       fork: repo.fork,
@@ -63,12 +60,17 @@ let save = (repoArr, cb) => {
       forks: repo.forks,
       open_issues_count: repo.open_issues_count,
       open_issues: repo.open_issues
+    };
+
+    results.push(Repo.findOneAndUpdate({githubId: repo.id}, repoDb, {upsert:true}), (err, value) => {
+      if (err) throw err;
+      return value;
     });
-    results.push(repoDb.save());
   });
 
   Promise.all(results)
-    .then((results) => cb(results));
+    .then((results) => cb(null, results))
+    .catch((err) => cb(err));
 }
 
 var db = mongoose.connection;

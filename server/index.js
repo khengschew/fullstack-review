@@ -10,20 +10,16 @@ app.use(morgan('default'));
 app.use(express.static(__dirname + '/../client/dist'));
 
 app.post('/repos', function (req, res) {
-  // TODO - your code here!
-  // This route should take the github username provided
-  // and get the repo information from the github API, then
-  // save the repo information in the database
   github.getReposByUsername(req.body.term, (err, data) => {
     if (err) {
       console.log('there is an error');
       res.send(err);
     } else {
-      // Need to check whether status code is 200, otherwise don't do anything
       if (data.statusCode === 200) {
-        db.save(JSON.parse(data.body), data => {
+        db.save(JSON.parse(data.body), (err, data) => {
+          if (err) res.send(error);
           console.log('sending data!');
-          res.send(data);
+          res.send({});
         });
       } else {
         console.log('no data found!');
