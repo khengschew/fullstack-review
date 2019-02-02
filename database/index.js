@@ -1,5 +1,5 @@
 const mongoose = require('mongoose');
-mongoose.connect(process.env.MONGODB_URI);
+mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost/fetcher');
 
 let repoSchema = new mongoose.Schema({
   githubId: Number,
@@ -62,14 +62,13 @@ let save = (repoArr, cb) => {
       open_issues: repo.open_issues
     };
 
-    results.push(Repo.findOneAndUpdate({githubId: repo.id}, repoDb, {upsert:true}), (err, value) => {
-      if (err) throw err;
-      return value;
-    });
+    results.push(Repo.findOneAndUpdate({githubId: repo.id}, repoDb, {upsert:true}));
   });
 
   Promise.all(results)
-    .then((results) => cb(null, results))
+    .then((results) => {
+      console.log('all promises done');
+      cb(null, results)})
     .catch((err) => cb(err));
 }
 
